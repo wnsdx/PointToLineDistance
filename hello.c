@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <math.h>
 // #include <src.h>
 
 #define DEBUG 1
@@ -18,6 +19,8 @@ typedef struct pointToLine{
     float d;
     float kp;
     float dp;
+    float xc;
+    float yc;
     int len;
 }PTL;
 
@@ -42,6 +45,8 @@ int PointToLineDistance(PTL *para){
     para->len = i;
     GetSlopeAndOffset(para);
     GetPerpendicularLineSlopAndOffset(para);
+    GetLinesCrossPosition(para);
+    GetPointToLineDistance(para);
     return 0;
 }
 
@@ -52,8 +57,8 @@ int GetSlopeAndOffset(PTL *para){
     kd=(x2-x1);
     para->k = ku/kd;
     para->d = y1-(para->k)*x1;
-    printf("ku=%.2f\n",ku);
-    printf("kd=%.2f\n",kd);
+    //printf("ku=%.2f\n",ku);
+    //printf("kd=%.2f\n",kd);
     printf("k=%.2f\n",(para->k));
     printf("d=%.2f\n",(para->d));
     return 0;
@@ -69,7 +74,30 @@ int GetPerpendicularLineSlopAndOffset(PTL *para){
         printf("kp=%.2f\n",(para->kp));
         printf("dp=%.2f\n",(para->dp));
     }
+    return 0;
+}
 
+int GetLinesCrossPosition(PTL *para){
+    float xc=0,xcu=0,xcd=0,yc=0;
+    xcu=((para->dp)-(para->d))*1000;
+    xcd=((para->k)-(para->kp))*1000;
+    xc=xcu/xcd;
+    yc=(para->kp)*xc+para->dp;
+    printf("xcu=%.2f\n",(xcu));
+    printf("xcd=%.2f\n",(xcd));
+    printf("xc=%.2f\n",(xc));
+    printf("yc=%.2f\n",(yc));
+    para->xc=xc;
+    para->yc=yc;
+    return 0;
+}
+int GetPointToLineDistance(PTL *para){
+    float dis=0;
+    double tmp1=0,tmp2=0;
+    tmp1=(para->point[2][0]) - (para->xc);
+    tmp2=(para->point[2][1]) - (para->yc);
+    dis = sqrt(pow(tmp1,2.0)+pow(tmp2,2.0));
+    printf("distance=%.4f\n",dis);
     return 0;
 }
 
@@ -86,4 +114,7 @@ int main(void){
     free(mem);
     return 0;
 }
+
+
+
 
